@@ -6,8 +6,9 @@ var fs = require('fs');
 
 class PluginLigic {
 
-	constructor(node_env, dir, replaceFile,rootDir) {
+	constructor(node_env, dir, replaceFile,rootDir,user) {
 		this.node_env = node_env
+		this.user = user;
 		this.dir = dir;
 		this.replaceFile = replaceFile;
 		this.rootDir = rootDir;
@@ -34,18 +35,26 @@ class PluginLigic {
 	processNodes(nodeMap) {
 		for (let k in nodeMap) {
 			try{
-				if(k=="condition"){
-					if (this.node_env == 'production') { //发行版 不导出条件编译 
+				let data;
+				if(k=="condition" && this.node_env == 'production'){
+					 //发行版 不导出条件编译 
 						continue;
+					 
+				}else if(k=="subPackages"){
+					  data = this.processSubpackages(k, nodeMap[k]);
+					  if(data.length==0){
+						  continue;
+					  }
+				}else{
+					data = this.processNode(k, nodeMap[k]);
+					if(k=='condition'){
+						data= {
+							"current": 0,
+							"list": data ||[]
+						}
 					}
-				}
-				let data = this.processNode(k, nodeMap[k]); 
-				if(k=='condition'){
-					data= {
-						"current": 0,
-						"list": data ||[]
-					}
-				}
+					
+				} 
 				this.releaseData[k] = data || {"error":k+"节点解析返回undefined,请检查"}
 			}catch(e){
 				console.error("处理配置文件失败",k,nodeMap[k], e);
@@ -70,9 +79,17 @@ class PluginLigic {
 	processNode(moduleName, path) {
 		let files = fs.readdirSync(path, 'utf-8');
 		let returnVal = [];
+		  // console.log("处理", path)
 		for(let key of files) { 
 				if (key.indexOf('.js') < 0) continue; 
-				// console.log("处理", this.node_env)
+				if(moduleName=="condition"){
+					console.log(key,this.user)
+						if(key!="index.js" && key.indexOf(this.user)<0){
+							continue;
+						}
+				}
+				
+				
 				let obj = require(path+"/"+ key)
 				if (obj instanceof Array) { //是数组 
 						if (key.indexOf('excludes')>=0) { //仅处理数组节点
@@ -89,18 +106,12 @@ class PluginLigic {
 										this.errorText.push( moduleName +"/"+ key + " 内缺失文件 " + a.path)
 										continue;
 									}
-								}else if(moduleName=="subPackages"){
-									let sas = a.pages;
-									let sarr = [];
-									for(let sa of sas){
-										let sap = a.root+"/"+sa.path;
-										if(!this.checkFileExists(sap)){
-											this.errorText.push(moduleName +"/"+ key + " 内缺失文件 " + sap)
-											continue;
-										}
-										sarr.push(sa);
-									}
-									 a.pages = sarr;
+								}else if(path.indexOf("subPackages")>=0){
+									let sp = moduleName +  "/"+ a.path
+									if(!this.checkFileExists(sp)){
+										this.errorText.push( moduleName +"/"+ key + " 内缺失文件 " + sp)
+										continue;
+									} 
 								}else if(moduleName=="condition"){
 									if(!this.checkFileExists(a.path)){
 										this.errorText.push( moduleName +"/"+ key + " 内缺失文件 " + a.path)
@@ -131,6 +142,40 @@ class PluginLigic {
 		return returnVal;
 	} 
 	
+	/**
+	 * 处理subpackage ,逻辑和pages其实一样,只是最后组装成subpackages需要的数组
+	 */
+	processSubpackages(moduleName, dir){
+		let arr=[]
+		
+		let dirs = fs.readdirSync(dir, 'utf-8');
+		
+		dirs.forEach((pac)=>{
+			//每个子目录一个 子包
+			// console.log(moduleName,  dir + "/" + pac);
+			let p =  dir + "/" + pac ;
+			let stat = fs.lstatSync(p);
+			if (stat.isDirectory()) {
+				 let data = this.processNode(pac, p );
+				 // console.log(data)
+				 if(!data || data.length==0){
+				 	return;
+				 }
+				 arr.push({
+				 	root: pac,
+				 	pages: data
+				 });
+			}
+			
+		})  
+		return arr;
+	}
+	
+	
+	
+	
+	
+	
 	checkFileExists(path){
 		let file = this.rootDir+"/"+ path+".vue";
  
@@ -160,8 +205,9 @@ function vitePluginReplaceUniappConfig(options) {
 				let dir = option.dir; // 需要处理的目录
 				let rootDir = option.rootDir
 				let replaceFile = option.replaceFile; //需要替换的文件
+				let user = option.user
 				try {
-					let pluginLogic = new PluginLigic(node_env, dir, replaceFile,rootDir);
+					let pluginLogic = new PluginLigic(node_env, dir, replaceFile,rootDir,user);
 					pluginLogic.process();
 					// fs.writeFileSync(path, file, { "flag": "w" });
 				} catch (err) {
