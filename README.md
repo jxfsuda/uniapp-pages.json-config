@@ -33,7 +33,7 @@ condition easycom  globalStyle pages ....  目录 ,就是 pages.json中的第一
    module.exports ={
 		"navigationStyle": "default",
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "iBuick",
+		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	}
