@@ -55,7 +55,12 @@ class PluginLigic {
 					}
 					
 				} 
-				this.releaseData[k] = data || {"error":k+"节点解析返回undefined,请检查"}
+				if(data){
+					this.releaseData[k] = data
+				}else{
+					console.log("info :"+ k+" 节点解析返回undefined")
+				}
+				
 			}catch(e){
 				console.error("处理配置文件失败",k,nodeMap[k], e);
 			} 
@@ -83,7 +88,7 @@ class PluginLigic {
 		for(let key of files) { 
 				if (key.indexOf('.js') < 0) continue; 
 				if(moduleName=="condition"){
-					console.log(key,this.user)
+					// console.log(key,this.user)
 						if(key!="index.js" && key.indexOf(this.user)<0){
 							continue;
 						}
@@ -193,7 +198,7 @@ class PluginLigic {
 
 
 
-function vitePluginReplaceUniappConfig(options) {
+module.exports=(options)=> {
 	var name = 'vite-plugin-replace-uniapp_config';
 
 	return {
@@ -216,5 +221,4 @@ function vitePluginReplaceUniappConfig(options) {
 			});
 		}
 	};
-}
-export default vitePluginReplaceUniappConfig;
+} 
