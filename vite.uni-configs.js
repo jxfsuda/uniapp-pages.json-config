@@ -1,12 +1,8 @@
-/**
- *  
- */
 var path = require("path")
 var fs = require('fs');
-
 class PluginLigic {
 
-	constructor(node_env, dir, replaceFile,rootDir,user) {
+	constructor(node_env, dir, replaceFile,rootDir,user,watchDir) {
 		this.node_env = node_env
 		this.user = user;
 		this.dir = dir;
@@ -14,7 +10,23 @@ class PluginLigic {
 		this.rootDir = rootDir;
 		this.errorText=[];
 		this.releaseData = {}; //最终数据
+		if(watchDir){ //监听配置目录文件变更,重新组装文件,触发差量编译
+			this.watchDirChange()
+		}
 	}
+
+	watchDirChange(){
+		 
+		console.log(`uniapp-pages-config插件正在监听配置目录`+this.dir);
+		fs.watch(this.dir,{recursive:true},(event,filename)=>{
+			//console.log(`监听 `,event,filename);
+		    if (filename && filename.indexOf(".js")>0){
+		        console.log(`${filename}文件发生变更`);
+				this.process()
+		    }
+		})
+	}
+
 
 	process() {
 		let files = fs.readdirSync(this.dir, 'utf-8');
@@ -199,8 +211,7 @@ class PluginLigic {
 
 
 module.exports=(options)=> {
-	var name = 'vite-plugin-replace-uniapp_config';
-
+	var name = 'vite-plugin-replace-uniapp_config'; 
 	return {
 		name: name,
 		enforce: 'post',
@@ -211,8 +222,13 @@ module.exports=(options)=> {
 				let rootDir = option.rootDir
 				let replaceFile = option.replaceFile; //需要替换的文件
 				let user = option.user
+				let watchDir = option.watchDir;
+				if(watchDir!==false){
+					watchDir=true;
+				}
+				
 				try {
-					let pluginLogic = new PluginLigic(node_env, dir, replaceFile,rootDir,user);
+					let pluginLogic = new PluginLigic(node_env, dir, replaceFile,rootDir,user,watchDir);
 					pluginLogic.process();
 					// fs.writeFileSync(path, file, { "flag": "w" });
 				} catch (err) {
