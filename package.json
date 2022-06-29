@@ -1,0 +1,27 @@
+{
+  "name": "vite-plugin-uni-pages-config",
+  "version": "1.0.4",
+  "description": "uniapp pages.json split manager",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jxfsuda/uniapp-pages.json-config.git"
+  },
+  "keywords": [
+    "uniapp",
+    "pages.json",
+    "split"
+  ],
+  "author": "jxfsuda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jxfsuda/uniapp-pages.json-config/issues"
+  },
+  "homepage": "https://github.com/jxfsuda/uniapp-pages.json-config#readme",
+  "devDependencies": { 
+  }
+}
