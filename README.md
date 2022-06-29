@@ -22,7 +22,8 @@ export default defineConfig({
 			 dir:  __dirname+"/project-config/pages.json/",  //配置文件放置的基础目录
 			 replaceFile:  __dirname+"/pages.json", //要生成的文件路径
 			 user: process.env.USER,  // unicloud 用户名，用于条件编译
-			 rootDir:   process.env.UNI_INPUT_DIR //项目根目录
+			 rootDir:   process.env.UNI_INPUT_DIR, //项目根目录
+			 watchDir: false  //是否需要监听配置文件变更,热部署
 		}]) 
 	]
 });
