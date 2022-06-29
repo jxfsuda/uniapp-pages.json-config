@@ -22,6 +22,8 @@ class PluginLigic {
 			//console.log(`监听 `,event,filename);
 		    if (filename && filename.indexOf(".js")>0){
 		        console.log(`${filename}文件发生变更`);
+				this.errorText=[];
+				this.releaseData = {}; //清理最终数据
 				this.process()
 		    }
 		})
@@ -116,8 +118,10 @@ class PluginLigic {
 						}
 						
 						let arr = [];
-						for(let a of obj){
-							if(a){
+						for(let o of obj){
+							
+							if(o){
+								let a = JSON.parse(JSON.stringify(o));
 								if(moduleName=="pages"){
 									if(!this.checkFileExists(a.path)){
 										this.errorText.push( moduleName +"/"+ key + " 内缺失文件 " + a.path)
@@ -139,7 +143,7 @@ class PluginLigic {
 										prefix = key.substr(0,key.length-3);
 									}
 									a.name= prefix+"_$_"+a.name;
-									// console.log(moduleName,a)
+								    // console.log(moduleName,key)
 								}
 								arr.push(a);
 							}
