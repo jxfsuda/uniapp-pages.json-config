@@ -1,8 +1,9 @@
 # uniapp-pages.json-config
 uniapp pages.json 管理工具 vite插件版
 注意,项目需要先有一个可运行的pages.json 否则项目无法运行,也就无法执行到vite.config
+### 2022-06-29 修复热更新时,condition节点名称重复问题
 ### 2022-06-28 修复不设置tabbar时的执行错误
-###增加配置目录.js文件变更,触发重新组装,进而触发hbuilder差量编译.达到热更新的目的
+### 增加配置目录.js文件变更,触发重新组装,进而触发hbuilder差量编译.达到热更新的目的
 
 
 ```
