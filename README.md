@@ -8,26 +8,31 @@ uniapp pages.json 管理工具 vite插件版
 
 ```
 // vite.config.js or vite.config.ts
+// vite.config.js or vite.config.ts 
 import {
 	defineConfig
 } from "vite";
 import uni from "@dcloudio/vite-plugin-uni"; 
-import vitePluginReplaceUniappConfig from "./project-config/vite.uni-configs.js"  
+import vitePluginReplaceUniappConfig from "vite-plugin-uni-pages-config" 
+ 
+console.error("当前用户(condition中文件名用此名字):   ", process.env.USER)
+let node_env = process.env.NODE_ENV; 
+let uniPlugin = uni();
+ 
  
 export default defineConfig({
 	plugins: [ 
-		uni(), 
+		uniPlugin, 
 		vitePluginReplaceUniappConfig([{
-			 node_env:process.env.NODE_ENV,
-			 dir:  __dirname+"/project-config/pages.json/",  //配置文件放置的基础目录
-			 replaceFile:  __dirname+"/pages.json", //要生成的文件路径
-			 user: process.env.USER,  // unicloud 用户名，用于条件编译
-			 rootDir:   process.env.UNI_INPUT_DIR, //项目根目录
-			 watchDir: false  //是否需要监听配置文件变更,热部署
+			 node_env,  //是发布还是调试
+			 dir:  __dirname+"/project-config/pages.json/", // 配置文件所在目录
+			 replaceFile:  __dirname+"/pages.json", //生成的文件路径
+			 rootDir:   process.env.UNI_INPUT_DIR,   // 项目根目录
+			 user:  process.env.USER   //hbuilderx登录用户名 
+			// , watchDir: false  //是否需要监听配置文件变更,热部署 默认 true
 		}]) 
 	]
 });
-
 
 ```
 在 {dir} 目录下,分别建立
