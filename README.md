@@ -69,7 +69,7 @@ module.exports = [
 ```
 还可以放其他按照模块或者开发者名字的js 格式一致,这样达到团队开发不冲突的目的.
 
-特殊:   名称带有 excludes 的文件, 发行时不合并
+### 特殊:   名称带有 excludes 的文件, 发行时不合并
 如: moduleA_excludes.js
 
 
